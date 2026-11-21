@@ -29,6 +29,20 @@
     .fx-free { margin: 14px 0 0; padding: 12px 16px; border-left: 6px solid #22C55E; background: #E8F5E9; border-radius: 6px; font-size: 15px; }
     .fx-from { margin-top: 22px; } .fx-from p { margin: 6px 0 0; }
     @media (max-width: 900px) { .gb-cover .fx-reel { order: -1; } }
+    /* Sean, 2026-11-21: "make the play like glow, like pulsate... so they know to play" and "it's not clear to me that that preview is a video...
+       put like a play button... make the play button a little see through". Liz's Play breathes until it is pressed; the reel gets a see-through
+       play button centered on An's shirt, below her face (the face rule: nothing covers a face), gone once the reel plays. */
+    @keyframes fxPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(194,24,91,.55); } 50% { transform: scale(1.08); box-shadow: 0 0 0 9px rgba(194,24,91,0); } }
+    .rf-guide [data-play].nudge { animation: fxPulse 1.6s ease-in-out infinite; }
+    .fx-play { position: absolute; left: 50%; top: 54%; transform: translate(-50%, -50%); width: 19%; aspect-ratio: 1; border-radius: 50%; border: 3px solid rgba(255,255,255,.9);
+      background: rgba(0,0,0,.32); display: grid; place-items: center; cursor: pointer; padding: 0; animation: fxPulse2 1.8s ease-in-out infinite; }
+    .fx-play svg { width: 42%; height: 42%; margin-left: 8%; fill: rgba(255,255,255,.92); }
+    @keyframes fxPulse2 { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.08); } }
+    .fx-reel.on .fx-play { display: none; }
+    /* The reel's frame is the reel's own shape (9:16), never the 4:5 picture frame it sits in: the whole video shows, nothing cropped. */
+    .gb-cover .k-pic.fx-reel { aspect-ratio: 9 / 16; height: auto; }
+    .gb-cover .k-pic.fx-reel video { height: 100%; }
+    @media (prefers-reduced-motion: reduce) { .rf-guide [data-play].nudge, .fx-play { animation: none; } }
     .fx-prev { position: absolute; top: 10px; right: 10px; background: #1a1a1a; color: #fff; font-weight: 900; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
     body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
 
@@ -236,7 +250,7 @@
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
   function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
   // The real, locked reel (an-sen-saigon reel-v4, 2026-11-19). Watch only: no download, nothing for them to post.
-  function reel() { return '<div class="k-pic fx-reel" style="--k-c:#2D5C27"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>'; }
+  function reel() { return '<div class="k-pic fx-reel" style="--k-c:#2D5C27"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video><button type="button" class="fx-play" aria-label="Play the reel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>'; }
 
   var VIEWS = {
     start: function (i) {
@@ -291,9 +305,10 @@
     var g = main.querySelector('.rf-guide'), b = g && g.querySelector('[data-play]');
     if (b) {
       // Play shows only when the recording is there; nothing plays until pressed.
-      b.style.display = 'none';
+      b.style.display = 'none'; b.classList.add('nudge');
       fetch(g.getAttribute('data-audio'), { method: 'HEAD' }).then(function (r) { if (r.ok) b.style.display = ''; }).catch(function () {});
       b.addEventListener('click', function () {
+        b.classList.remove('nudge');
         if (playing === b) { stop(); return; }
         stop(); audio = new Audio(g.getAttribute('data-audio')); audio.addEventListener('ended', stop);
         audio.play(); b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b;
@@ -301,7 +316,13 @@
     }
     track('part', p[0]);
     if (b) b.addEventListener('click', function () { if (playing === b) track('play_liz', p[0]); });
-    var v = main.querySelector('.fx-reel video'); if (v) v.addEventListener('play', function () { track('play_reel', p[0]); }, { once: true });
+    var v = main.querySelector('.fx-reel video');
+    if (v) {
+      v.addEventListener('play', function () { track('play_reel', p[0]); }, { once: true });
+      v.addEventListener('play', function () { v.parentNode.classList.add('on'); });
+      v.addEventListener('ended', function () { v.parentNode.classList.remove('on'); });
+      var pb = main.querySelector('.fx-play'); if (pb) pb.addEventListener('click', function () { v.play(); });
+    }
     var c = document.getElementById('fxClip'); if (c) c.addEventListener('play', function () { track('play_clip', p[0]); }, { once: true });
     main.querySelectorAll('[data-t]').forEach(function (a) { a.addEventListener('click', function () { track(a.getAttribute('data-t'), p[0]); }); });
     if (p[0] === 'collab') main.querySelectorAll('[data-ans]').forEach(function (x) { x.addEventListener('click', function () {
