@@ -196,8 +196,10 @@
     @media (max-width: 900px) { .vx-menu { flex-wrap: nowrap; } .vx-map { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .vx-sched div { grid-template-columns: 1fr; gap: 2px; } .vx-t { grid-template-columns: minmax(0, 1fr); } .vx-t .k-num { display: none; } }
     .vx-day a { display: grid; grid-template-columns: 130px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 10px 12px; border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: #fff; font-size: 14px; font-weight: 600; color: var(--k-ink); text-decoration: none; }
     .vx-day a:hover { background: var(--k-tint); }
+    .vx-day .vx-open { grid-template-columns: 130px minmax(0, 1fr); background: var(--k-tint); }
+    .vx-day .vx-open a { display: inline; padding: 0; border: 0; background: none; font-weight: 800; text-decoration: underline; }
     .vx-day em { font-style: normal; font-size: 11px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--k-pinkd); white-space: nowrap; }
-    @media (max-width: 900px) { .vx-day a { grid-template-columns: 1fr; gap: 2px; } }
+    @media (max-width: 900px) { .vx-day a, .vx-day .vx-open { grid-template-columns: 1fr; gap: 2px; } }
   </style>
 </head>
 <body>
@@ -350,7 +352,13 @@
   function rundown(d) {
     var out = [];
     VILLAGES.forEach(function (v) { v[5].forEach(function (s) { if (onDay(s[0], d)) out.push([s[1], s[2], v]); }); });
-    return out.sort(function (x, y) { return mins(x[0]) - mins(y[0]); });
+    // "Open to everyone" from several villages at one time reads as one line: doors open, then the villages.
+    var rows = [], open = {};
+    out.forEach(function (r) {
+      if (/^Open to everyone/.test(r[1])) { if (!open[r[0]]) { open[r[0]] = [r[0], 'Doors open', []]; rows.push(open[r[0]]); } open[r[0]][2].push(r[2]); }
+      else rows.push([r[0], r[1], [r[2]]]);
+    });
+    return rows.sort(function (x, y) { return mins(x[0]) - mins(y[0]); });
   }
   var GAL = [];
   function walk(list, name) {
@@ -514,7 +522,10 @@
       return '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; <a href="#/week">The week</a> &rsaquo; ' + d[1] + '</div>' +
         '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + d[1] + ', <span class="k-hl ' + ['o', 'g', 'p', 'o', 'g'][di] + '">' + d[2] + '</span></h1><p class="k-lede">' + d[3] + '. ' + d[4] + '</p></div>' + guide(PARTS[i]) + '<div class="rf-act"></div></div>' + menu +
         '<div class="ex-two" style="margin-top:22px"><section class="rf-sec"><span class="k-label">The rundown, morning to night</span><div class="vx-sched vx-day">' +
-          rundown(di).map(function (r) { return '<a href="#/expo/' + r[2][0] + '"><b>' + r[0] + '</b><span>' + r[1] + '</span><em>' + r[2][1] + ' &rsaquo;</em></a>'; }).join('') + '</div>' +
+          rundown(di).map(function (r) {
+            if (r[2].length === 1) return '<a href="#/expo/' + r[2][0][0] + '"><b>' + r[0] + '</b><span>' + r[1] + '</span><em>' + r[2][0][1] + ' &rsaquo;</em></a>';
+            return '<div class="vx-open"><b>' + r[0] + '</b><span>' + r[1] + ': ' + r[2].map(function (v) { return '<a href="#/expo/' + v[0] + '">' + v[1] + '</a>'; }).join(', ') + '</span><em></em></div>';
+          }).join('') + '</div>' +
           '<p class="gb-fine">A sample schedule, how we picture it. Times and details can change. Tap a line to see its village.</p></section>' +
         '<div class="k-pic" style="--k-c:#FF9EC4"><img src="' + thumb(d[5], 828) + '" alt="' + d[1] + ' at the World Vegan Expo, how we picture it"></div></div>' +
         (nd ? '<div class="gb-next"><a class="k-btn" href="#/week/' + nd[0] + '">Next day: ' + nd[1] + ' &rsaquo;</a><span>' + nd[3] + '</span></div>' : next(i));
