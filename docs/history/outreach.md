@@ -250,3 +250,21 @@ other Holiday Launch groups sent nothing) and skips a member whose address alrea
 Opted out lists spam reports and unsubscribes with the email that did it (`ve_opted_out_people`). Holiday Launch Everyone Else goes 125 to
 195 a day from Wed Nov 18 if Mon/Tue are clean (Sean: "yes, step it up Wednesday"). Canon `canon-ve-outreach-roster-campaigns` v4.
 Handoff `docs/handoff/2026-11-15-ve-outreach-christmas-and-11-days-of-giving.md`.
+
+## 2026-11-13 to 15: The Media Room (playbook `ve-newsroom`)
+Sean, 2026-11-13: build relationships with media outlets, not one-off pitches: a feed of original stories from inside the community,
+research, early access, a survey, digests, "Cover this", referrals; "isn't it just the outreach? Why are we creating a new thing?" Locked:
+**HQ Outreach is the one engine** with audience types (press, podcasts, publicists, partners, sponsors); the media list becomes its Media
+audience; journalists, podcasters and publicists are members with a role; their door is the **Media Room** (Sean: "Media Room works").
+**Pitch Gate** canon `canon-lesaruss-pitch-gate` (Sean: "The structure works. Let's roll with it."): 4 core checks plus 3 per audience type,
+6 of 7 to send, Fit and Honest required; every pitch from every brand and client passes it. **Sean approves every pitch** until a paid person
+does it. **Founding Press 25** approved by Sean (`ve_media_outlets.program = 'founding_press'`). Contacts: `ve-media-contacts` reads each
+outlet's own pages and bylines through `ve-web-reader` (registered as sources, noted "approved by Sean"); an email is kept only when it is
+written on the page it came from; `ve_media_contacts` (migration `20261113_ve_media_contacts.sql`); `browser: true` for sites that refuse
+plain reads (Apify; it returned 401 on 2026-11-13 and worked again from 2026-11-19). **Best contact** per outlet by plain rules with a reason
+naming the route (`ve_media_pick_best`, migration `20261115_ve_media_best_contact.sql`), shown first under Who to contact. LESARUSS AI tech
+stories that leaked in from the News Desk were removed (`20261113_ve_media_drop_other_brand_coverage.sql`). **The Media Room mock**,
+`/mocks/media-room` (Welcome Guide frame copied from `mocks/nominate`, Liz, Media peach: `ve-look.js` maps the path to Media and `ve-look.css`
+v15 gives Media the Guides frame rules), rebuilt press-first after a six-journalist panel: Open the kit is private, Request an interview or Book
+this guest goes to a same-day press desk, every item shows its outlet facts and ties to us, research is outlet level with method and data and
+never scores a reporter. Waiting on Sean to lock it; nothing goes to a journalist before the lock (Outreach is the last step).

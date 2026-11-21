@@ -451,6 +451,11 @@ Pass the original as the first reference for every new picture of them (Higgsfie
 76 Theo pictures from `theo-v2` the same day and they were thrown out. The rule now lives in CLAUDE.md (the Guide scenes recipe) and canon
 `canon-ve-guide-roster` `looks_locked_v1`, and the squares and `VE_GUIDE_ART` came over on `claude/keen-knuth-234ob9`.
 
+**2026-11-15, evening (Sean: "Theo's profile avatar, his main avatar, is too light... same thing with Maya... The renders, recent renders you did of
+them look good"):** the squares are now `theo-v4.jpg` and `maya-v5.jpg`, drawn from the originals alone (Theo `ddc4b75d`, Maya `75c28848`) with their
+wardrobe references, plain white background, warm wave. A first try that also passed the current square as a pose reference came out light again;
+a current square as a second reference pulls the skin toward it. `theo-v3` and `maya-v4` retired as too light. Scenes unchanged.
+
 ## Social art: current look, unique scenes, a mixed cast (Sean, 2026-11-15)
 
 On the Founding Member carousels: "I don't think these graphics are using our new style... we would need to generate it. So moving forward, we
