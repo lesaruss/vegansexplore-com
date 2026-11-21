@@ -1,0 +1,97 @@
+{
+ "label": "Doctor's tip · B12",
+ "head": [
+  "Going Vegan? Don't",
+  "forget your B12."
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Nutrition Guide",
+ "end_head": [
+  "Learn more in the",
+  "Nutrition Guide"
+ ],
+ "end_cta": "Open the Nutrition Guide|B12 is free",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   528.15,
+   551.75
+  ],
+  [
+   580.35,
+   591.55
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-90.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-b12-v4.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "t1": 2.6,
+   "text": "A Vegan diet is always a good thing."
+  },
+  {
+   "t0": 2.6,
+   "t1": 6.5,
+   "text": "It is true, there are a lot of foods that are Vegan that may not be the healthiest for us,"
+  },
+  {
+   "t0": 6.5,
+   "t1": 13.6,
+   "text": "but going Vegan just means a person decides: I'm not eating animals anymore."
+  },
+  {
+   "t0": 13.6,
+   "t1": 17.9,
+   "text": "That's a really good step, almost no matter how you do it."
+  },
+  {
+   "t0": 17.9,
+   "t1": 22.6,
+   "text": "Getting the meat and the cheese and the junk out of your diet is a good thing,"
+  },
+  {
+   "t0": 22.6,
+   "t1": 23.35,
+   "text": "but you're not done."
+  },
+  {
+   "t0": 23.35,
+   "t1": 27.2,
+   "text": "There's one supplement that you really ought to take: vitamin B12."
+  },
+  {
+   "t0": 27.2,
+   "t1": 29.6,
+   "text": "You need it for healthy nerves, healthy blood,"
+  },
+  {
+   "t0": 29.6,
+   "t1": 32.9,
+   "text": "and it's in every multiple vitamin you ever took."
+  },
+  {
+   "t0": 32.9,
+   "t1": 34.55,
+   "text": "But don't neglect it."
+  }
+ ],
+ "end_guide": {
+  "img": "public/guides/nutrition/theo-supplements.jpg",
+  "tag": "Walked through by Theo",
+  "line": "B12, protein, iron, calcium, vitamin D and more, nutrient by nutrient."
+ }
+}

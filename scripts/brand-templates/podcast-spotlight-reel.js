@@ -49,7 +49,12 @@ const frame = (id, inner) => `<div class="sr-rf" id="${id}">${inner}${GUIDES}</d
 const open = frame('open', band(S.head) + window_ + lower + cityArt(''));
 const clip = frame('clip', band(S.head) + window_ + lower + cityArt(S.caption));
 const endbg = frame('endbg', band(S.end_head, S.end_label) + `<div class="sr-win"></div>` + lower + ctaPlate());
-const end = frame('end', band(S.end_head) + `<div class="sr-endc"><p>${esc(S.end_line)}</p><span class="sr-btn">${esc(S.url)}</span>
+// end_guide (Sean, 2026-11-20: the profile page "doesn't make me want to go see his page... maybe it's us promoting the guide"):
+// the Guide's own 4:5 scene, who walks you through it and one line, the call to action on the plate. Without it, the old text end.
+const G = S.end_guide;
+const end = G
+  ? frame('end', band(S.end_head, S.end_label) + `<div class="sr-eg"><img src="${data(G.img)}" alt=""><div class="sr-egt"><span class="sr-egtag">${esc(G.tag)}</span><p>${esc(G.line)}</p></div></div>` + ctaPlate())
+  : frame('end', band(S.end_head) + `<div class="sr-endc"><p>${esc(S.end_line)}</p><span class="sr-btn">${esc(S.url)}</span>
   <img class="sr-lgo" src="/public/logo-ve-landscape-v2.svg" alt="Vegans Explore"></div>` + cityArt(''));
 
 const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}/"><style>${css}
@@ -90,6 +95,11 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-endc p{margin:0;font:900 56px/1.1 Montserrat;color:var(--ink);letter-spacing:-.02em}
   .sr-endc .sr-btn{background:var(--or);color:var(--ink);font:900 40px/1 Montserrat;padding:26px 34px;border-radius:10px;letter-spacing:.02em}
   .sr-endc .sr-lgo{width:420px;margin-top:10px}
+  .sr-eg{position:absolute;left:90px;right:120px;top:668px;height:610px;display:flex;gap:40px;align-items:center}
+  .sr-eg img{height:600px;width:480px;object-fit:cover;flex:none;border:6px solid var(--ink);border-radius:16px;box-shadow:14px 14px 0 var(--ink);background:#fff}
+  .sr-egt{display:flex;flex-direction:column;gap:22px}
+  .sr-egtag{align-self:flex-start;background:var(--ink);color:#fff;font:900 19px/1.2 Montserrat;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;border-radius:8px;white-space:nowrap}
+  .sr-egt p{margin:0;font:900 44px/1.12 Montserrat;color:var(--ink);letter-spacing:-.02em}
   .sr-g4{position:absolute;left:0;right:0;top:285px;height:1350px;border-top:6px dashed #e11;border-bottom:6px dashed #e11;z-index:9}
   .sr-gs{position:absolute;left:90px;right:120px;top:300px;bottom:300px;border:4px solid #08f;z-index:9}
   .sr-gt,.sr-gb,.sr-gr{position:absolute;background:rgba(225,17,17,.28);color:#fff;font:900 26px/1 Montserrat;display:flex;align-items:center;justify-content:center;z-index:8}
@@ -108,10 +118,10 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
     const lines = () => { const c = h.cloneNode(); c.textContent = 'X'; h.parentNode.appendChild(c); const one = c.offsetHeight; c.remove(); return Math.round(h.offsetHeight / one); };
     while (lines() > 2 && k > 0.7) { k -= 0.04; h.style.fontSize = (f0 * k) + 'px'; } }));
   // New title styles: each row fits the band's width (870 px) without wrapping, never past its base size.
-  // Style A: both rows grow together until the longer one spans the band (at most 118 px).
+  // Style A: both rows grow together until the longer one spans the band (at most 120 px). Write the two rows about the same length so both reach across (Sean, 2026-11-20: "I like it when it's all the way across").
   await p.evaluate(() => document.querySelectorAll('.ts-a .sr-ht').forEach((h) => { const W = h.clientWidth, sp = [...h.querySelectorAll('span')];
     let f = 96; const wid = () => Math.max(...sp.map((x) => x.offsetWidth));
-    while (wid() < W - 6 && f < 112) { f += 2; sp.forEach((x) => x.style.fontSize = f + 'px'); }
+    while (wid() < W - 6 && f < 120) { f += 2; sp.forEach((x) => x.style.fontSize = f + 'px'); }
     while (wid() > W && f > 40) { f -= 2; sp.forEach((x) => x.style.fontSize = f + 'px'); } }));
   await p.evaluate(() => document.querySelectorAll('.sr-ht').forEach((h) => { const W = h.clientWidth;
     h.querySelectorAll('span').forEach((sp) => { let f = parseFloat(getComputedStyle(sp).fontSize); while (sp.offsetWidth > W && f > 30) { f -= 2; sp.style.fontSize = f + 'px'; } }); }));
