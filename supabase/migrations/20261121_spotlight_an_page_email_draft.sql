@@ -45,3 +45,9 @@ Thank you again for sharing your story.
 Sean A. Russell
 Vegans Explore$b$
 where campaign_slug='spotlight-an-sen-saigon-page' and step=1 and locked_at is null;
+
+-- Sean said "send" 2026-11-21. Email locked, campaign approved; goes out Mon Nov 23 from 9 AM Eastern (start_on). Hold it if An replies first.
+update ve_outreach_campaign_emails set locked_at = now(), locked_by = '72712a4a-ea0e-4ef4-a29e-d382496ef8da' where campaign_slug='spotlight-an-sen-saigon-page' and step=1 and locked_at is null;
+update ve_outreach_campaigns set status='active', approved_at=now(), approved_by='72712a4a-ea0e-4ef4-a29e-d382496ef8da',
+  note = note || ' Sean said "send" 2026-11-21; goes out Mon Nov 23 from 9 AM Eastern (start_on). Hold it if An replies to Friday''s email first.'
+where slug='spotlight-an-sen-saigon-page' and approved_at is null;
