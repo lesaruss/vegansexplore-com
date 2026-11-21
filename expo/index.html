@@ -125,6 +125,10 @@
     .gb-quote { font-size: 16px; font-weight: 600; line-height: 1.55; border-left: 6px solid var(--k-or); padding: 4px 0 4px 16px; margin: 18px 0 6px; max-width: 900px; }
     .gb-fine { font-size: 12.5px; font-weight: 600; color: var(--k-mute); }
     .gb-form { max-width: 900px; }
+    #inRoles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr)); gap: 8px; }
+    #inRoles label { display: flex; align-items: center; gap: 10px; margin: 0; padding: 10px 12px; border: 2px solid var(--k-ink); border-radius: 6px; background: #fff; font-size: 14px; font-weight: 800; letter-spacing: 0; text-transform: none; cursor: pointer; }
+    #inRoles label:has(input:checked) { background: var(--k-tint); }
+    #inRoles input { -webkit-appearance: radio; appearance: auto; width: 18px; height: 18px; min-height: 0; margin: 0; padding: 0; flex: none; accent-color: var(--k-ink); }
     /* The Expo as a visual journey (Sean, 2026-11-19: "we should be showing them visuals of how we picture this event, from the aerial shot
        of all the vendors, from the outdoor area to the stage... what their booth could look like"): the rows on the left, a picture walk on the
        right, one scene at a time with Back and Next. */
@@ -161,7 +165,7 @@
        exception to "nothing scrolls inside itself", at Sean's word; overscroll-behavior keeps the page scrolling past it. */
     .rf-guide { grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; }
     .rf-guide .av { width: 96px; height: 96px; border-radius: 12px; }
-    .rf-guide q { max-height: calc(1.35em * 3); overflow-y: auto; overscroll-behavior: auto; padding-right: 8px; scrollbar-width: thin; scrollbar-color: var(--k-pink) transparent; }
+    .rf-guide q { overflow: visible; }
     .rf-guide q::-webkit-scrollbar { width: 6px; } .rf-guide q::-webkit-scrollbar-thumb { background: var(--k-pink); border-radius: 3px; }
     /* Next part: a real button at the bottom (Sean: "a little bit more prominent button at the bottom"); outlined, the orange stays Save your day. */
     .gb-next { align-items: center; gap: 10px 16px; }
@@ -251,7 +255,7 @@
       'January 20 to 24, 2028, morning to night. Thursday for the trade, Friday to Sunday for everyone, Monday for impact.',
       "Thursday we open for the trade, Friday to Sunday for everyone, and every night ends at a chef's table, with the Vegans Explore Awards on Saturday.", 'liz-expo-week-v1.mp3', 'Day by day, morning to night'],
     ['road', 'The city race', 'Which city <span class="k-hl o">hosts it?</span>',
-      'The host city is not picked yet. The race shows us where the community is strongest, so we know where to look. Count in and your city is in the running.',
+      'The host city is not picked yet. The race shows us where the community is strongest, so we know where to look; it does not pick the host city. It shows counts, never names.',
       "The host city isn't picked yet. Count in for your city, share the race, and bring your people with you.", 'liz-expo-race-v1.mp3', 'Live, chapter by chapter'],
     ['why', 'The team', 'The <span class="k-hl p">team</span>',
       'Over 500 events hosted, produced and supported in the Vegan space, and the volunteer committees building the Expo with us. Vegans Explore is run by LESARUSS Inc.',
@@ -260,6 +264,9 @@
       'About a minute. You are first when tickets, booths and speaking slots open, and the Founding badge goes on your profile.',
       "Tell us how you'd like to be part of it, and you'll hear first when tickets, booths and travel open.", 'liz-expo-in-v1.mp3', 'A short form, about a minute']
   ];
+  // Liz's bubble: the first sentence of the view's narration, so the words match what she says (panel 2026-11-21).
+  var CAPS = {"start": "Hi, I'm Liz. This is the World Vegan Expo, January 20 to 24, 2028.", "for": "Tell me who you are. A member, a food vendor, a brand or sponsor, a city, a club, or a creator.", "for-member": "If you just want to be there, this is your door.", "for-vendor": "For food vendors, there's the Food Village outside and the World Food Pavilion.", "for-brand": "For brands and sponsors: the Exhibitor Hall, Thursday's trade day, and a lot to sponsor.", "for-city": "Think your city should host it? Host city bids are coming, and cities counted in hear first.", "for-club": "Run a club? Bring your people.", "for-creator": "For creators and speakers: the stages, the live podcast tapings and the content studio.", "expo": "Picture an Olympic village for the Vegan community.", "expo-food": "This is the Food Village. It's outdoors and free to walk in.", "expo-hall": "This is the Exhibitor Hall: the brands under one roof, with samples to taste.", "expo-world": "This is the World Food Pavilion. Food from every corner of the world.", "expo-learn": "This is the Education Village. Two stages and breakout rooms.", "expo-causes": "This is the Causes Village. Nonprofits, sanctuaries and rescues, the people doing the work.", "expo-market": "This is the Market. Beauty and personal care, fashion, home goods and makers.", "expo-well": "This is Wellness and Fitness. Morning yoga every day.", "expo-media": "This is Creators and Media. Sit in on a live podcast taping.", "expo-hub": "This is the Community Hub and Family corner.", "expo-nights": "When the villages close, the nights begin.", "week": "Five days, five nights. Pick a day to see it morning to night.", "week-thu": "Thursday, January twentieth. Trade and media day.", "week-fri": "Friday, January twenty-first. Public day one.", "week-sat": "Saturday, January twenty-second. The biggest day.", "week-sun": "Sunday, January twenty-third. Family and community day.", "week-mon": "Monday, January twenty-fourth. Industry and impact.", "road": "Which city hosts it? The host city isn't picked yet.", "why": "This is the team. Over 500 events hosted, produced and supported in the Vegan space.", "in": "Tell us how you would like to be a part of it."};
+  function vkey(p) { var s = sub(); return p[0] === 'in' || !s ? p[0] : p[0] + '-' + s; }
   var OLDP = { room: 'why', claim: 'in', part: 'for' };
   function idx(k) { k = OLDP[k] || k; for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
   function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; return idx(k); }
@@ -268,7 +275,7 @@
 
   function bar(i) {
     // Your door is not a tab: the doors are picked on the Overview, and a door's view sits under it (Sean, 2026-11-21).
-    var on = PARTS[i][0] === 'for' ? 0 : i;
+    var on = PARTS[i][0] === 'for' ? -1 : i;
     document.getElementById('gTabs').innerHTML = PARTS.map(function (p, j) {
       if (p[0] === 'for') return '';
       return '<a href="' + link(p[0]) + '"' + (j === on ? ' class="on" aria-current="page"' : p[0] === 'in' ? ' class="join"' : '') + '>' + p[1] + '</a>';
@@ -277,13 +284,13 @@
   }
   function guide(p) {
     return '<div class="rf-guide" data-audio="' + VB + p[5] + '"><span class="av" role="img" aria-label="Liz, our Guide for businesses" style="background-image:url(\'' + art() + '\')"></span>' +
-      '<div><span class="who">Liz, Explorer</span><q>' + esc(p[4]) + '</q></div>' +
+      '<div><span class="who">Liz, Explorer</span><q>' + esc(CAPS[vkey(p)] || p[4]) + '</q></div>' +
       '<button type="button" class="k-btn k-sm" data-play aria-label="Play Liz">' + PLAY + '<span>Play</span></button></div>';
   }
-  function head(i, action, crumb) {
+  function head(i, action, crumb, title, line) {
     var p = PARTS[i];
     return (i ? '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; ' + (crumb ? (p[0] === 'for' ? '' : '<a href="' + link(p[0]) + '">' + p[1] + '</a> &rsaquo; ') + crumb : p[1]) + '</div>' : '') +
-      '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + p[2] + '</h1><p class="k-lede">' + esc(p[3]) + '</p></div>' + guide(p) +
+      '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + (title || p[2]) + '</h1><p class="k-lede">' + (line || esc(p[3])) + '</p></div>' + guide(p) +
       '<div class="rf-act">' + (action || '') + '</div></div>';
   }
   function row(n, cls, title, body, tag, tagCls) {
@@ -457,6 +464,14 @@
   }
 
   // The locked offer, said once on each view, never repeated in every box.
+  var FIRSTS = {
+    member: 'You&rsquo;re first for tickets, plus a Founding badge on your profile. No fee, no deposit.',
+    vendor: 'First pick of spots before the public, plus a Founding badge. No fee, no deposit.',
+    brand: 'First pick of booths and sponsorships before the public, plus a Founding badge. No fee, no deposit.',
+    city: 'Cities counted in hear first when host city bids open, and get the host brief first. No fee, no commitment.',
+    club: 'Your club hears first on tickets, plus a Founding badge. No fee, no deposit.',
+    creator: 'You hear first when speaking slots open, plus a Founding badge. No fee, no deposit.'
+  };
   var FIRST = 'Count in now and you&rsquo;re first: tickets, booths and speaking slots before the public, plus a Founding badge on your profile. No fee, no deposit.';
   var DISCLAIMER = '<p class="gb-fine">January 20 to 24, 2028 are our planned dates. Dates, the host city and details can change, and everyone counted in hears first.</p>';
 
@@ -522,11 +537,11 @@
     'for': function (i) {
       var k = sub(), d = DOORS.filter(function (x) { return x[0] === k; })[0];
       if (!d) return head(i, '') + '<section class="rf-sec"><span class="k-label">I&rsquo;m here as</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' + next(i);
-      return head(i, '', d[4]) +
+      return head(i, '', d[4], d[4].replace(/(\S+)$/, '<span class="k-hl p">$1</span>'), d[5]) +
         '<div class="ex-two" style="margin-top:28px"><div><section class="rf-sec"><span class="k-label">' + d[4] + ': what you get today</span><div class="k-rows">' +
-          d[6].map(function (r, j) { return arow(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1], r[2], r[2] === '#/in' ? ' data-role="' + d[1] + '"' : ''); }).join('') + '</div></section>' +
+          d[6].map(function (r, j) { return arow(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1], r[2] === '#/in' ? '#/in/' + d[1] : r[2], r[2] === '#/in' ? ' data-role="' + d[1] + '"' : ''); }).join('') + '</div></section>' +
           '<div class="k-block k-tint" style="margin:18px 0 10px"><span class="k-label">Later</span>' + d[7] + '</div>' +
-          '<div class="gb-cta"><a class="k-btn k-cta" href="#/in" data-role="' + d[1] + '">Count me in</a><p class="rf-price">' + FIRST + '</p></div>' +
+          '<div class="gb-cta"><a class="k-btn k-cta" href="#/in/' + d[1] + '" data-role="' + d[1] + '">Count me in</a><p class="rf-price">' + (FIRSTS[d[0]] || FIRST) + '</p></div>' +
           '<section class="rf-sec"><span class="k-label">Another door</span><div class="rd-who">' + DOORS.filter(function (x) { return x !== d; }).map(function (x) { return '<a class="rd-door" href="#/for/' + x[0] + '">' + x[2] + '</a>'; }).join('') + '</div></section></div>' +
         '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/' + ({ member: 'walk-6-evening.jpg', vendor: 'walk-2-village.jpg', brand: 'walk-4-booth.jpg', city: 'walk-1-above.jpg', club: 'walk-6-evening.jpg', creator: 'walk-3-stage.jpg' })[d[0]] + '" alt="How we picture the World Vegan Expo"></div></div>' + next(i);
     },
@@ -600,6 +615,7 @@
         '<section class="rf-sec" id="cmBox"><span class="k-label">The committees</span><p class="gb-fine">Loading&hellip;</p></section>' + next(i);
     },
     'in': function (i) {
+      if (ROLE_NAMES[sub()] || sub() === 'committee') picked = sub();
       if (picked === 'committee' && !COMMS) picked = 'attend';
       return head(i, '') + '<div class="ex-two" style="margin-top:28px"><div><div class="k-card" style="--k-c:#F69820"><form id="inForm" class="k-form" novalidate>' +
         '<div class="k-f wide"><span class="k-label" style="margin:0 0 6px">I am counting myself in as</span><div class="ev-pick" id="inRoles">' + Object.keys(ROLE_NAMES).concat(COMMS ? ['committee'] : []).map(function (r) { return '<label><input type="radio" name="role" value="' + r + '"' + (r === picked ? ' checked' : '') + '> ' + (ROLE_NAMES[r] || 'A committee member') + '</label>'; }).join('') + '</div></div>' +
@@ -673,7 +689,7 @@
       // Play shows only when a recording is there. Each view's narration (Sean's takes, voice booth set ve-expo-narration); the Overview
       // plays its own and then "Tell me who you are", since the doors are picked there now.
       b.style.display = 'none';
-      var narr = VB + 'liz-expo-n-' + p[0] + (sub() ? '-' + sub() : '') + '-v1.mp3', list = [g.getAttribute('data-audio')];
+      var narr = VB + 'liz-expo-n-' + vkey(p) + '-v1.mp3', list = [g.getAttribute('data-audio')];
       if (same) { b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b; b.style.display = ''; }
       fetch(narr, { method: 'HEAD' }).then(function (r) {
         if (!r.ok) throw 0;
