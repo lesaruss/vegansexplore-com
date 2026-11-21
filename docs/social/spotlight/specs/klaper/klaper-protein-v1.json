@@ -1,0 +1,101 @@
+{
+ "label": "Doctor's tip · Protein",
+ "head": [
+  "Where do you get",
+  "your protein?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Michael Klaper",
+ "biz": "Moving Medicine Forward",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/klaper.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Klaper"
+ ],
+ "end_cta": "Find Dr. Michael Klaper on Vegans Explore",
+ "end_page": "$SCRATCH/pages/michael-klaper.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/klaper.mp4",
+ "parts": [
+  [
+   3385.1,
+   3392.6
+  ],
+  [
+   3393.5,
+   3400.3
+  ],
+  [
+   3422.0,
+   3428.25
+  ],
+  [
+   3452.6,
+   3463.7
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-protein-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "\"If you're not eating meat, where are you getting your protein?\"",
+   "t1": 2.5
+  },
+  {
+   "t0": 2.5,
+   "text": "But again, ask any buffalo, ask any giraffe, ask any muskox.",
+   "t1": 7.25
+  },
+  {
+   "t0": 7.25,
+   "text": "These animals grow to thousands of pounds of mammalian muscle",
+   "t1": 10.85
+  },
+  {
+   "t0": 10.85,
+   "text": "without ever eating a cheeseburger or pepperoni pizza.",
+   "t1": 14.0
+  },
+  {
+   "t0": 14.0,
+   "text": "The real protein powerhouses are the whole grains",
+   "t1": 17.7
+  },
+  {
+   "t0": 17.7,
+   "text": "and the legumes, beans, peas, chickpeas, lentils.",
+   "t1": 19.8
+  },
+  {
+   "t0": 19.8,
+   "text": "You eat whole plant food, three solid meals,",
+   "t1": 22.6
+  },
+  {
+   "t0": 22.6,
+   "text": "you eat 1,800, 2,000 calories of whole plant foods,",
+   "t1": 25.8
+  },
+  {
+   "t0": 25.8,
+   "text": "you are guaranteed of getting more than enough protein.",
+   "t1": 29.6
+  },
+  {
+   "t0": 29.6,
+   "text": "And so relax.",
+   "t1": 30.9
+  }
+ ]
+}

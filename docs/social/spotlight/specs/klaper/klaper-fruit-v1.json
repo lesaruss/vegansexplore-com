@@ -1,0 +1,96 @@
+{
+ "label": "Doctor's tip · Fruit",
+ "head": [
+  "Make fruit",
+  "your dessert"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Michael Klaper",
+ "biz": "Moving Medicine Forward",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/klaper.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Klaper"
+ ],
+ "end_cta": "Find Dr. Michael Klaper on Vegans Explore",
+ "end_page": "$SCRATCH/pages/michael-klaper.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/klaper-solo.mp4",
+ "parts": [
+  [
+   1486.5,
+   1491.0
+  ],
+  [
+   1497.2,
+   1501.2
+  ],
+  [
+   1556.2,
+   1561.2
+  ],
+  [
+   1563.7,
+   1572.3
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-fruit-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Have something fresh every day.",
+   "t1": 1.6
+  },
+  {
+   "t0": 1.6,
+   "text": "Don't eat everything out of cans and boxes.",
+   "t1": 4.25
+  },
+  {
+   "t0": 4.25,
+   "text": "Mangos, papayas.",
+   "t1": 5.55
+  },
+  {
+   "t0": 5.55,
+   "text": "We're in South Florida, there's such great fruit here.",
+   "t1": 8.0
+  },
+  {
+   "t0": 8.0,
+   "text": "I made oatmeal this morning, threw in some raisins and some date pieces,",
+   "t1": 11.4
+  },
+  {
+   "t0": 11.4,
+   "text": "it came out nice and sweet.",
+   "t1": 12.75
+  },
+  {
+   "t0": 12.75,
+   "text": "Mango chunks in the evening are lovely desserts.",
+   "t1": 15.65
+  },
+  {
+   "t0": 15.65,
+   "text": "Last night we had raspberries with some oat milk on it.",
+   "t1": 18.75
+  },
+  {
+   "t0": 18.75,
+   "text": "You get into the fruits for desserts and sweets.",
+   "t1": 21.35
+  }
+ ]
+}

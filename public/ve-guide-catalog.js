@@ -120,6 +120,10 @@
     { slug: 'nutrition-guide', shelf: 'everyday', label: 'Nutrition', tag: 'New', title: 'The Nutrition Guide', banner: '/public/guides/nutrition-guide.jpg', interests: ['health', 'food', 'starting'], href: '/guides/nutrition-guide',
       desc: 'What a Vegan plate needs, nutrient by nutrient: B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc, how much, where to get it and when to supplement, sourced, with our physicians on the podcast and Theo walking you through it. B12 is free.',
       chips: [{ text: 'Walked through by Theo' }, { text: 'B12 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
+    // Launched 2026-11-20 (Sean: "we should probably launch the activism guide as well... it should be good to go"). Icon until its 16:10 Dani banner is drawn.
+    { slug: 'vegan-activism-guide', shelf: 'everyday', label: 'Activism', tag: 'New', title: 'The Vegan Activism Guide', icon: 'megaphone', interests: ['causes'], href: '/guides/vegan-activism-guide',
+      desc: 'Every way of helping animals, side by side: humane education, street outreach, direct action, legal and policy work, sanctuaries, digital activism, campaigns, the speeches that changed minds and the history, with Dani walking you through it. Free for everyone.',
+      chips: [{ text: 'Walked through by Dani' }, { text: 'Free', cls: 'free' }], cta: 'Open the Guide' },
     { slug: 'creator-guide', shelf: 'work', label: 'Creators', tag: 'New', title: 'The Creator Guide', banner: '/public/guides/creator-guide.jpg?v=3', interests: ['creators', 'business'], href: '/guides/creator-guide',
       desc: 'For Vegan creators going from hobby to professional: ten moves, each with a real creator doing it and three action items, the creators and channels in our Directory, our creator conversations, and your next step as an Ambassador, with Kai walking you through it.',
       chips: [{ text: 'Walked through by Kai' }, { text: 'Free with the survey' }], cta: 'Open the Guide' },

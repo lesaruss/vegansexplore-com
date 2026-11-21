@@ -1,0 +1,111 @@
+{
+ "label": "Doctor's tip · Vitamin D",
+ "head": [
+  "Should you take",
+  "vitamin D?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Michael Klaper",
+ "biz": "Moving Medicine Forward",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/klaper.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Klaper"
+ ],
+ "end_cta": "Find Dr. Michael Klaper on Vegans Explore",
+ "end_page": "$SCRATCH/pages/michael-klaper.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/klaper.mp4",
+ "parts": [
+  [
+   2746.38,
+   2755.55
+  ],
+  [
+   2784.2,
+   2798.2
+  ],
+  [
+   2816.55,
+   2820.15
+  ],
+  [
+   2826.6,
+   2838.28
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-vitd-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Vitamin D is produced by our own bodies.",
+   "t1": 2.26
+  },
+  {
+   "t0": 2.26,
+   "text": "It's not really a vitamin, it's a hormone",
+   "t1": 4.76
+  },
+  {
+   "t0": 4.76,
+   "text": "that our skin produces when sunlight falls on our skin.",
+   "t1": 8.94
+  },
+  {
+   "t0": 8.94,
+   "text": "We spend all day inside, and when we do go outside,",
+   "t1": 12.44
+  },
+  {
+   "t0": 12.44,
+   "text": "we got a hat on, we got sleeves on, we got sunscreen on.",
+   "t1": 15.62
+  },
+  {
+   "t0": 15.62,
+   "text": "And as a result, very little ultraviolet light from the sun is falling on our skin,",
+   "t1": 20.16
+  },
+  {
+   "t0": 20.16,
+   "text": "and a lot of people have really low vitamin D levels.",
+   "t1": 22.66
+  },
+  {
+   "t0": 22.66,
+   "text": "If you are gonna have any blood tests done,",
+   "t1": 24.5
+  },
+  {
+   "t0": 24.5,
+   "text": "get your vitamin D level checked.",
+   "t1": 26.1
+  },
+  {
+   "t0": 26.1,
+   "text": "And if it's down in your boots, if it's five or eight or whatever,",
+   "t1": 29.88
+  },
+  {
+   "t0": 29.88,
+   "text": "you'd be wise to take 2,000 international units of vitamin D daily.",
+   "t1": 35.38
+  },
+  {
+   "t0": 35.38,
+   "text": "And that's a safe dose really for everybody.",
+   "t1": 37.7
+  }
+ ]
+}

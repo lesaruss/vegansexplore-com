@@ -1,0 +1,103 @@
+{
+ "label": "Doctor's tip · Diabetes",
+ "head": [
+  "Can you reverse",
+  "type 2 diabetes?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   306.4,
+   328.6
+  ],
+  [
+   332.65,
+   351.9
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-diabetes-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "We decided to do something different,",
+   "t1": 1.72
+  },
+  {
+   "t0": 1.72,
+   "text": "and that was a diet with no animal products and keeping oils really low.",
+   "t1": 5.44
+  },
+  {
+   "t0": 5.44,
+   "text": "And we found that this new approach was three times better at reducing blood sugar",
+   "t1": 9.66
+  },
+  {
+   "t0": 9.66,
+   "text": "compared to the other.",
+   "t1": 10.98
+  },
+  {
+   "t0": 10.98,
+   "text": "And it started to open the door to people with diabetes needing less medicine,",
+   "t1": 18.36
+  },
+  {
+   "t0": 18.36,
+   "text": "maybe no medicine at all, or maybe the disease itself actually went away.",
+   "t1": 21.92
+  },
+  {
+   "t0": 21.92,
+   "text": "The discovery that sugar doesn't cause diabetes.",
+   "t1": 25.02
+  },
+  {
+   "t0": 25.02,
+   "text": "It's caused by fatty foods putting fat particles inside your muscle and liver cells",
+   "t1": 30.88
+  },
+  {
+   "t0": 30.88,
+   "text": "that cause your insulin to not be able to work in those cells anymore.",
+   "t1": 34.52
+  },
+  {
+   "t0": 34.52,
+   "text": "The cells get gummed up.",
+   "t1": 35.94
+  },
+  {
+   "t0": 35.94,
+   "text": "Well, we get that gummy fat out of your cells by changing your diet,",
+   "t1": 39.58
+  },
+  {
+   "t0": 39.58,
+   "text": "and diabetes improves dramatically.",
+   "t1": 41.2
+  }
+ ]
+}
