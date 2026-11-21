@@ -281,3 +281,7 @@ accounts... note the last time they made a post... I could even support the audi
 - **Each position sets its own application**: "we want to give them an opportunity to show us what they got... It's not going to be the same for
   everybody." Examples of work where it matters; for the Instagram role it is admin work, so a few plain questions.
 - **The three result emails are approved as written.**
+
+## Later (pointer added 2026-11-21)
+Superseded in part by later chats: KJ became Community Manager (2026-11-19, `docs/plans/2026-11-19-kj-agreement.md`), Instagram access is
+Meta Business Suite (Shared Access parked), Vegans Explore is a DBA of LESARUSS Inc. Current state: `docs/handoff/2026-11-21-positions-session-wrap.md`.
