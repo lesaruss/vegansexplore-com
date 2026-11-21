@@ -98,6 +98,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-endc .sr-btn{background:var(--or);color:var(--ink);font:900 40px/1 Montserrat;padding:26px 34px;border-radius:10px;letter-spacing:.02em}
   .sr-endc .sr-lgo{width:420px;margin-top:10px}
   .sr-key{font-style:normal;color:#C2185B}
+  /* No hanging words (Sean, 2026-11-21): a line that wraps is balanced across its rows. */
+  .sr-cap,.sr-cap span,.sr-egt p{text-wrap:balance}
   .lay-big .sr-win{left:0;top:640px;width:1080px;height:608px;border:0;border-radius:0;box-shadow:none}
   .lay-big .sr-lt{top:1256px;gap:16px}
   .lay-big .sr-lt img{width:56px;height:56px;border-radius:12px;border-width:2px}
