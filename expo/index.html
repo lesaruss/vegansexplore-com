@@ -194,6 +194,10 @@
     .vx-sched em { font-style: normal; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--k-pinkd); }
     .vx-sched b { font-weight: 900; }
     @media (max-width: 900px) { .vx-menu { flex-wrap: nowrap; } .vx-map { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .vx-sched div { grid-template-columns: 1fr; gap: 2px; } .vx-t { grid-template-columns: minmax(0, 1fr); } .vx-t .k-num { display: none; } }
+    .vx-day a { display: grid; grid-template-columns: 130px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 10px 12px; border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: #fff; font-size: 14px; font-weight: 600; color: var(--k-ink); text-decoration: none; }
+    .vx-day a:hover { background: var(--k-tint); }
+    .vx-day em { font-style: normal; font-size: 11px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--k-pinkd); white-space: nowrap; }
+    @media (max-width: 900px) { .vx-day a { grid-template-columns: 1fr; gap: 2px; } }
   </style>
 </head>
 <body>
@@ -236,6 +240,9 @@
     ['expo', 'What it will be', 'An <span class="k-hl g">Olympic village</span> for the Vegan community',
       'Villages that match our Directory: food outside, brands inside, the world in one pavilion, and the voices that move us on stage.',
       "Picture an Olympic village for the Vegan community: the brands, the biggest voices, and food from every corner of the world, all in one place.", 'liz-expo-expo-v1.mp3', 'Walk the Expo, village by village'],
+    ['week', 'The week', 'Five days, <span class="k-hl p">five nights</span>',
+      'January 20 to 24, 2028, morning to night. Thursday for the trade, Friday to Sunday for everyone, Monday for impact.',
+      "Thursday we open for the trade, Friday to Sunday for everyone, and every night ends at a chef's table, with the Vegans Explore Awards on Saturday.", 'liz-expo-week-v1.mp3', 'Day by day, morning to night'],
     ['road', 'The city race', 'Which city <span class="k-hl o">hosts it?</span>',
       'The host city is not picked yet. The chapters whose members and businesses show up lead the race. Push yours up.',
       "The host city isn't picked yet. Count in for your city, share the race, and bring your people with you.", 'liz-expo-race-v1.mp3', 'Live, chapter by chapter'],
@@ -246,7 +253,7 @@
       'About a minute. You are first when tickets, booths and speaking slots open, and the Founding badge goes on your profile.',
       "Tell us how you'd like to be part of it, and you'll hear first when tickets, booths and travel open.", 'liz-expo-in-v1.mp3', 'A short form, about a minute']
   ];
-  var OLDP = { room: 'why', claim: 'in', week: 'expo', part: 'for' };
+  var OLDP = { room: 'why', claim: 'in', part: 'for' };
   function idx(k) { k = OLDP[k] || k; for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
   function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; return idx(k); }
   function sub() { return (location.hash.match(/^#\/[a-z]+\/([a-z]+)/) || [])[1] || ''; }
@@ -298,7 +305,7 @@
       ['v/31.jpg', 'v/32.jpg', 'v/33.jpg', 'v/34.jpg', 'v/35.jpg']],
     ['learn', 'The Education Village', 'pe', 'Two stages and breakout rooms: activism, food futures, business, health and culture.',
       [['The main stage', 'The biggest voices in the Vegan world.'], ['Panels on the second stage', 'The conversations our community cares about most.'], ['Hands-on workshops', 'Cook, plan and learn something you can use the next day.'], ['A start for the curious', 'Short talks for anyone just starting out.']],
-      [['Friday', '10 AM', 'The opening keynote'], ['Saturday', '11 AM', 'The marquee panel'], ['Fri to Sun', '1 PM to 5 PM', 'Workshops and breakouts'], ['Monday', '9 AM', 'Business deep dives and the investor showcase']],
+      [['Friday', '10 AM', 'The opening keynote'], ['Saturday', '11 AM', 'The marquee panel'], ['Fri to Sun', '1 PM to 5 PM', 'Workshops and breakouts'], ['Sunday', '4 PM', 'A documentary premiere'], ['Monday', '9 AM', 'Business deep dives and the investor showcase']],
       ['walk-3-stage.jpg', 'v/41.jpg', 'v/42.jpg', 'v/43.jpg', 'v/44.jpg']],
     ['causes', 'The Causes Village', 'dk', 'Nonprofits, sanctuaries and rescues, with the Give Back wall and volunteer sign-ups.',
       [['Nonprofit tables', 'Meet the people doing the work.'], ['Meet a sanctuary', 'The animals they care for, and how to help.'], ['The Give Back wall', 'Leave a heart, pick a cause.'], ['Volunteer sign-ups', 'Find a way to help at home.']],
@@ -325,6 +332,26 @@
       [['Thursday', '7 PM', 'Opening Night and the Host City Table'], ['Friday', '7 PM', 'The World Table, then the Friday party'], ['Saturday', '7 PM', 'The Vegans Explore Awards'], ['Sunday', '7 PM', 'A chef dinner, then the Sunday party'], ['Monday', '11 AM', 'The closing brunch']],
       ['walk-6-evening.jpg', 'v/101.jpg', 'v/102.jpg', 'v/103.jpg', 'v/104.jpg']]
   ];
+  // The week (Sean, 2026-11-21: "the schedule deserves its own page, like a rundown... What's day one? What's day two?"). Each day's
+  // rundown is built from the villages' own schedules, so a time changed in a village changes here too.
+  var DAYS = [
+    ['thu', 'Thursday', 'January 20', 'Trade and media day', 'The brands meet buyers and press. The Food Village opens to everyone. Opening Night.', 'v/24.jpg'],
+    ['fri', 'Friday', 'January 21', 'Public day one', 'Every village opens, the opening keynote, then the World Table.', 'walk-3-stage.jpg'],
+    ['sat', 'Saturday', 'January 22', 'The biggest day', 'The marquee panel, the Burger Battle, then the Vegans Explore Awards.', 'v/102.jpg'],
+    ['sun', 'Sunday', 'January 23', 'Family and community day', 'Club meetups, the Dessert Battle, a documentary premiere, a chef dinner.', 'v/92.jpg'],
+    ['mon', 'Monday', 'January 24', 'Industry and impact', 'An Impact Morning in the host city, business deep dives, the closing brunch.', 'v/54.jpg']
+  ];
+  var DAYN = { thu: 0, thursday: 0, fri: 1, friday: 1, sat: 2, saturday: 2, sun: 3, sunday: 3, mon: 4, monday: 4 };
+  function onDay(label, d) {
+    var m = label.toLowerCase().match(/^(\w+)(?: to (\w+))?$/); if (!m) return false;
+    var a = DAYN[m[1]], b = m[2] ? DAYN[m[2]] : a; return d >= a && d <= b;
+  }
+  function mins(t) { var m = t.match(/(\d+)(?::(\d+))? (AM|PM)/); if (!m) return 0; return ((+m[1] % 12) + (m[3] === 'PM' ? 12 : 0)) * 60 + (+m[2] || 0); }
+  function rundown(d) {
+    var out = [];
+    VILLAGES.forEach(function (v) { v[5].forEach(function (s) { if (onDay(s[0], d)) out.push([s[1], s[2], v]); }); });
+    return out.sort(function (x, y) { return mins(x[0]) - mins(y[0]); });
+  }
   var GAL = [];
   function walk(list, name) {
     GAL = list.map(function (f) { return [name, f]; });
@@ -461,14 +488,7 @@
         return head(i, '') + menu +
           '<section class="rf-sec"><span class="k-label">Walk the Expo: pick a village</span><div class="vx-map">' + VILLAGES.map(function (v, j) {
             return '<a class="vx-card" href="#/expo/' + v[0] + '"><span class="vx-pic" style="background-image:url(\'' + thumb(v[6][0]) + '\')"></span><span class="vx-t"><span class="k-num ' + v[2] + '">' + (j + 1) + '</span><span><b>' + v[1] + '</b><small>' + v[3] + '</small></span></span></a>';
-          }).join('') + '</div></section>' +
-          '<section class="rf-sec"><span class="k-label">The week</span><div class="k-rows">' +
-          row('Thu', 'or', 'Trade and media day', 'The brands meet buyers and press. The Food Village opens to everyone. Opening Night.', 'Jan 20') +
-          row('Fri', 'br', 'Public day one', 'Every village opens, the opening keynote, the World Table dinner.', 'Jan 21') +
-          row('Sat', 'pk', 'The biggest day', 'The marquee panel, then the Vegans Explore Awards.', 'Jan 22') +
-          row('Sun', 'pe', 'Family and community day', 'Club meetups, a documentary premiere, a chef dinner.', 'Jan 23') +
-          row('Mon', 'dk', 'Industry and impact', 'Investor showcase, an Impact Morning in the host city, the closing brunch.', 'Jan 24') +
-          '</div></section>' + next(i);
+          }).join('') + '</div></section>' + next(i);
       }
       var v = VILLAGES[vi], nv = VILLAGES[vi + 1];
       return '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; <a href="#/expo">What it will be</a> &rsaquo; ' + v[1] + '</div>' +
@@ -479,6 +499,25 @@
           '<p class="gb-fine">How we picture it. Times and details can change.</p></section></div>' +
         walk(v[6], v[1]) + '</div>' +
         (nv ? '<div class="gb-next"><a class="k-btn" href="#/expo/' + nv[0] + '">Next village: ' + nv[1] + ' &rsaquo;</a><span>' + nv[3] + '</span></div>' : next(i));
+    },
+    week: function (i) {
+      var k = sub(), di = -1; DAYS.forEach(function (d, j) { if (d[0] === k) di = j; });
+      var menu = '<nav class="vx-menu" aria-label="The days"><a href="#/week"' + (di < 0 ? ' aria-current="page"' : '') + '>All five days</a>' + DAYS.map(function (d, j) { return '<a href="#/week/' + d[0] + '"' + (j === di ? ' aria-current="page"' : '') + '>' + d[1] + ', ' + d[2].replace('January', 'Jan') + '</a>'; }).join('') + '</nav>';
+      var cols = ['or', 'br', 'pk', 'pe', 'dk'];
+      if (di < 0) {
+        return head(i, '') + menu +
+          '<section class="rf-sec"><span class="k-label">Pick a day</span><div class="vx-map">' + DAYS.map(function (d, j) {
+            return '<a class="vx-card" href="#/week/' + d[0] + '"><span class="vx-pic" style="background-image:url(\'' + thumb(d[5]) + '\')"></span><span class="vx-t"><span class="k-num ' + cols[j] + '">' + d[1].slice(0, 3) + '</span><span><b>' + d[3] + '</b><small>' + d[1] + ', ' + d[2] + '. ' + d[4] + '</small></span></span></a>';
+          }).join('') + '</div></section>' + next(i);
+      }
+      var d = DAYS[di], nd = DAYS[di + 1];
+      return '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; <a href="#/week">The week</a> &rsaquo; ' + d[1] + '</div>' +
+        '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + d[1] + ', <span class="k-hl ' + ['o', 'g', 'p', 'o', 'g'][di] + '">' + d[2] + '</span></h1><p class="k-lede">' + d[3] + '. ' + d[4] + '</p></div>' + guide(PARTS[i]) + '<div class="rf-act"></div></div>' + menu +
+        '<div class="ex-two" style="margin-top:22px"><section class="rf-sec"><span class="k-label">The rundown, morning to night</span><div class="vx-sched vx-day">' +
+          rundown(di).map(function (r) { return '<a href="#/expo/' + r[2][0] + '"><b>' + r[0] + '</b><span>' + r[1] + '</span><em>' + r[2][1] + ' &rsaquo;</em></a>'; }).join('') + '</div>' +
+          '<p class="gb-fine">A sample schedule, how we picture it. Times and details can change. Tap a line to see its village.</p></section>' +
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="' + thumb(d[5], 828) + '" alt="' + d[1] + ' at the World Vegan Expo, how we picture it"></div></div>' +
+        (nd ? '<div class="gb-next"><a class="k-btn" href="#/week/' + nd[0] + '">Next day: ' + nd[1] + ' &rsaquo;</a><span>' + nd[3] + '</span></div>' : next(i));
     },
     road: function (i) {
       return head(i, '') +
