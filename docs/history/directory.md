@@ -1282,3 +1282,8 @@ on our side can start the workflow. Now one run is a watch: it asks `ve-claims` 
 installs the renderer only when something waits, renders, commits and pushes; a run starts on the schedule, on every push to `main` and
 by hand, and the `find-us-post` concurrency group keeps one watching and one queued, so a new watch starts when the last one ends. The
 repo is public, so the runner minutes are free. If the Actions tab ever shows no run in progress, run it by hand (Run workflow).
+
+- **The business dashboard, 2026-11-13** (playbook `ve-business-dashboard`, wrapped 2026-11-21): restyled on the brand kit; the **Media kit**
+  from the database (`ve_media_kit_items`, `ve_media_kit(uuid)`, `?tab=media-kit&pd=`); **Opportunities** (`ve_business_opportunities(p_kind)`
+  over `ve_dashboard_cards.opp_kind`, `?k=`, I'm in through `ve-claims` `partner_interest`); the **weekly Monday email** `ve-business-weekly`
+  built and OFF until Sean approves it. Handoff `docs/handoff/2026-11-21-ve-business-dashboard-kit-media-opps-weekly.md`.
