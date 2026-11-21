@@ -112,6 +112,11 @@
     .gb-next { margin-top: 34px; border-top: 2px solid var(--k-ink); padding-top: 16px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
     .gb-next a { font-size: 18px; font-weight: 900; color: var(--k-ink); }
     .gb-next span { font-size: 13px; font-weight: 700; color: var(--k-mute); }
+    /* Your door folded into the Overview (Sean, 2026-11-21: "can't we eliminate a page by just having them pick right then and there") */
+    .gb-pick { margin-bottom: 26px; }
+    .gb-pick .k-label { font-size: 15px; color: var(--k-ink); }
+    .gb-pick-note { margin-top: 34px; border-top: 2px solid var(--k-ink); padding-top: 16px; font-size: 18px; font-weight: 900; }
+    .gb-pick-note a { color: var(--k-ink); }
     .gb-see { margin-top: 30px; border-top: 2px solid var(--k-line); padding-top: 18px; }
     .gb-see .k-label { color: var(--k-pinkd); }
     .gb-see h2 { font-size: 20px; font-weight: 900; margin: 2px 0 4px; }
@@ -262,8 +267,11 @@
   function link(k) { return k === 'start' ? '#/' : '#/' + k; }
 
   function bar(i) {
+    // Your door is not a tab: the doors are picked on the Overview, and a door's view sits under it (Sean, 2026-11-21).
+    var on = PARTS[i][0] === 'for' ? 0 : i;
     document.getElementById('gTabs').innerHTML = PARTS.map(function (p, j) {
-      return '<a href="' + link(p[0]) + '"' + (j === i ? ' class="on" aria-current="page"' : p[0] === 'in' ? ' class="join"' : '') + '>' + p[1] + '</a>';
+      if (p[0] === 'for') return '';
+      return '<a href="' + link(p[0]) + '"' + (j === on ? ' class="on" aria-current="page"' : p[0] === 'in' ? ' class="join"' : '') + '>' + p[1] + '</a>';
     }).join('');
     var t = document.querySelector('#gTabs .on'); if (t && innerWidth < 900) document.getElementById('gTabs').scrollLeft = Math.max(0, t.offsetLeft - 16);
   }
@@ -274,7 +282,7 @@
   }
   function head(i, action, crumb) {
     var p = PARTS[i];
-    return (i ? '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; ' + (crumb ? '<a href="' + link(p[0]) + '">' + p[1] + '</a> &rsaquo; ' + crumb : p[1]) + '</div>' : '') +
+    return (i ? '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; ' + (crumb ? (p[0] === 'for' ? '' : '<a href="' + link(p[0]) + '">' + p[1] + '</a> &rsaquo; ') + crumb : p[1]) + '</div>' : '') +
       '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + p[2] + '</h1><p class="k-lede">' + esc(p[3]) + '</p></div>' + guide(p) +
       '<div class="rf-act">' + (action || '') + '</div></div>';
   }
@@ -502,12 +510,14 @@
     start: function (i) {
       return head(i, '') +
         '<div class="gb-cover"><div>' +
+          '<section class="rf-sec gb-pick" id="pick" style="margin-top:0"><span class="k-label">Pick who you are to continue</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' +
           '<div class="k-blocks gb-now"><div class="k-block k-dk"><span class="k-label">What</span><span class="k-big">Jan 20 to 24, 2028</span><small>The whole Vegan world in one place, every two years</small></div>' +
           '<div class="k-block k-peach"><span class="k-label">Why now</span><span class="k-big">Host city open</span><small>Count in and put your city in the running</small></div>' +
           '<div class="k-block k-pink"><span class="k-label">Count in now</span><span class="k-big">You&rsquo;re first</span><small>Tickets, booths and speaking slots before the public, and a Founding badge</small></div></div>' +
           '<p class="gb-by"><b>From the team behind over 500 events.</b> Hosted, produced and supported in the Vegan space. <a href="#/why">Meet the team</a></p>' +
-          '<section class="rf-sec"><span class="k-label">I&rsquo;m here as</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' + DISCLAIMER +
-        '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide, welcoming you into a food village of booths from around the world"></div></div>' + next(i);
+          DISCLAIMER +
+        '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide, welcoming you into a food village of booths from around the world"></div></div>' +
+        '<p class="gb-pick-note"><a href="#/" data-pick>Pick one of the six above to continue &uarr;</a></p>';
     },
     'for': function (i) {
       var k = sub(), d = DOORS.filter(function (x) { return x[0] === k; })[0];
@@ -630,26 +640,50 @@
   }
   document.addEventListener('click', function (e) { var a = e.target.closest('[data-role]'); if (a) { picked = a.getAttribute('data-role'); if (a.hasAttribute('data-city')) pickedCity = a.getAttribute('data-city'); if (a.hasAttribute('data-committee')) pickedCommittee = a.getAttribute('data-committee'); } });
 
-  var audio = null, playing = null;
-  function stop() { if (audio) audio.pause(); if (playing) playing.innerHTML = PLAY + '<span>Play</span>'; playing = null; }
+  // Play once and Liz keeps talking: every view you open after that plays its narration until you press Pause (Sean, 2026-11-21: "if I
+  // click play once, it should set the default to play each time I go to a page until I pause it"). Kept per browser; a fresh page load
+  // can still be blocked by the browser until the first tap, then it carries on.
+  var audio = null, playing = null, lastKey = '', AUTO = 've-expo-autoplay';
+  function autoOn() { try { return localStorage.getItem(AUTO) === '1'; } catch (e) { return false; } }
+  function setAuto(v) { try { if (v) localStorage.setItem(AUTO, '1'); else localStorage.removeItem(AUTO); } catch (e) {} }
+  function stop() { if (audio) { audio.onended = null; audio.pause(); } audio = null; if (playing) playing.innerHTML = PLAY + '<span>Play</span>'; playing = null; }
+  function playList(b, list) {
+    stop(); var k = 0;
+    function go() {
+      audio = new Audio(list[k]);
+      audio.onended = function () { k++; if (k < list.length) go(); else stop(); };
+      var pr = audio.play(); if (pr && pr.catch) pr.catch(function () { stop(); });
+    }
+    go(); b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b;
+  }
   function render() {
-    stop();
+    var key = location.hash, same = key === lastKey && audio && !audio.paused;
+    lastKey = key;
+    if (!same) stop();
     var i = cur(), p = PARTS[i];
+    // Your door has no page of its own: #/for alone goes back to the Overview, where the doors are.
+    if (p[0] === 'for' && !sub()) { history.replaceState(null, '', location.pathname + location.search + '#/'); key = lastKey = location.hash; i = 0; p = PARTS[0]; }
     bar(i);
     main.innerHTML = VIEWS[p[0]](i);
-    document.title = (i ? p[1].replace(/&rsquo;/g, '\u2019') + ' | ' : '') + 'The World Vegan Expo Guide — Vegans Explore';
+    document.title = (i ? p[1].replace(/&rsquo;/g, '’') + ' | ' : '') + 'The World Vegan Expo Guide — Vegans Explore';
+    var pk = main.querySelector('[data-pick]');
+    if (pk) pk.addEventListener('click', function (e) { e.preventDefault(); var t = document.getElementById('pick'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     var g = main.querySelector('.rf-guide'), b = g && g.querySelector('[data-play]');
     if (b) {
-      // Play shows only when a recording is there; nothing plays until pressed. Each view's narration (Sean records them, voice booth set
-      // ve-expo-narration) plays when it exists; until then, Liz's short line.
+      // Play shows only when a recording is there. Each view's narration (Sean's takes, voice booth set ve-expo-narration); the Overview
+      // plays its own and then "Tell me who you are", since the doors are picked there now.
       b.style.display = 'none';
-      var narr = VB + 'liz-expo-n-' + p[0] + (sub() ? '-' + sub() : '') + '-v1.mp3';
-      fetch(narr, { method: 'HEAD' }).then(function (r) { if (r.ok) { g.setAttribute('data-audio', narr); b.style.display = ''; return; } throw 0; })
-        .catch(function () { fetch(g.getAttribute('data-audio'), { method: 'HEAD' }).then(function (r) { if (r.ok) b.style.display = ''; }).catch(function () {}); });
+      var narr = VB + 'liz-expo-n-' + p[0] + (sub() ? '-' + sub() : '') + '-v1.mp3', list = [g.getAttribute('data-audio')];
+      if (same) { b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b; b.style.display = ''; }
+      fetch(narr, { method: 'HEAD' }).then(function (r) {
+        if (!r.ok) throw 0;
+        list = p[0] === 'start' ? [narr, VB + 'liz-expo-n-for-v1.mp3'] : [narr];
+        b.style.display = '';
+        if (autoOn() && !same && location.hash === key) playList(b, list);
+      }).catch(function () { fetch(list[0], { method: 'HEAD' }).then(function (r) { if (r.ok) b.style.display = ''; }).catch(function () {}); });
       b.addEventListener('click', function () {
-        if (playing === b) { stop(); return; }
-        stop(); audio = new Audio(g.getAttribute('data-audio')); audio.addEventListener('ended', stop);
-        audio.play(); b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b;
+        if (playing === b) { stop(); setAuto(false); return; }
+        setAuto(true); playList(b, list);
       });
     }
     if (p[0] === 'expo') wireWalk();
