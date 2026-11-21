@@ -12,7 +12,8 @@ general one). Built and tested 2026-11-21: webhook check, signature check, keywo
 1. developers.facebook.com, My Apps, Create App. Use case: manage messaging and content on Instagram. Name: Vegans Explore. Connect the
    Vegans Explore business portfolio.
 2. In the app: Instagram, API setup with Instagram login. Copy the Instagram app ID and Instagram app secret.
-3. Supabase dashboard, project lesaruss-directory, Edge Functions, Secrets: add `INSTAGRAM_APP_ID` and `INSTAGRAM_APP_SECRET`.
+3. Key Room (`hq.lesaruss.ai/keys`): paste them into the two requests waiting there, `INSTAGRAM_APP_ID` and `INSTAGRAM_APP_SECRET`
+   (Sean, 2026-11-21: "update the information in the key room, not in the super base. I don't want to work directly with that").
 4. Back in the app, Instagram login settings, Valid OAuth redirect URI:
    `https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments?action=callback`
 5. Webhooks: Callback URL `https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments`, Verify token (Logan sends it in chat;

@@ -55,3 +55,9 @@ where not exists (select 1 from ve_ig_keywords where upper(keyword) = 'B12' and 
 -- Weekly token refresh (Instagram long-lived tokens last 60 days). Applied 2026-11-21.
 -- select cron.schedule('ve-ig-token-refresh', '23 13 * * 1', $c$select net.http_post(url:='https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments?action=refresh', headers:=jsonb_build_object('Content-Type','application/json','Authorization','Bearer '||(select value from lesaruss_secrets where key='LESARUSS_ADMIN_TOKEN')), body:='{}'::jsonb, timeout_milliseconds:=30000)$c$);
 -- The webhook verify token IG_WEBHOOK_VERIFY_TOKEN was generated into lesaruss_secrets (random, not in the repo).
+-- Key Room requests (Sean fills them in hq.lesaruss.ai/keys, never the Supabase dashboard). Applied 2026-11-21.
+insert into lesaruss_secrets (key, value) values ('INSTAGRAM_APP_ID','pending'), ('INSTAGRAM_APP_SECRET','pending') on conflict (key) do nothing;
+insert into secret_rotation_plan (key, provider, tier, dashboard_url, label, requested_at, request_note) values
+('INSTAGRAM_APP_ID','Meta','manual','https://developers.facebook.com/apps/','Instagram app ID (Vegans Explore comment-to-DM)', now(), 'See docs/plans/2026-11-21-ig-comment-dm-setup.md'),
+('INSTAGRAM_APP_SECRET','Meta','manual','https://developers.facebook.com/apps/','Instagram app secret (Vegans Explore comment-to-DM)', now(), 'See docs/plans/2026-11-21-ig-comment-dm-setup.md')
+on conflict (key) do nothing;
