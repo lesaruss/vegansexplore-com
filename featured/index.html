@@ -74,6 +74,16 @@
       .fx-cover .ig-wrap { position: relative; min-height: 620px; }
       .fx-cover .ig-post { position: absolute; top: 0; right: 0; bottom: 0; overflow-y: auto; overscroll-behavior: auto; scrollbar-width: thin; }
     }
+    .ig-more { display: none; }
+    @media (min-width: 901px) {
+      .fx-cover .ig-more { display: flex; position: sticky; bottom: 0; justify-content: center; padding: 34px 0 12px; margin-top: -46px;
+        background: linear-gradient(rgba(255,255,255,0), #fff 62%); pointer-events: none; transition: opacity .3s; }
+      .fx-cover .ig-more span { pointer-events: auto; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: var(--k-ink); color: #fff;
+        font-size: 12px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; border-radius: 6px; animation: fxBob 1.6s ease-in-out infinite; }
+      .fx-cover .ig-post.scrolled .ig-more { opacity: 0; }
+    }
+    @keyframes fxBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+    @media (prefers-reduced-motion: reduce) { .ig-more span { animation: none; } }
     /* One step at a time (Sean: "once they've answered that... the next button will appear, or it'll be clickable"). */
     .gb-next .k-btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
     .rf-bar .k-tabs > a.off { opacity: .45; pointer-events: none; }
@@ -245,11 +255,8 @@
   var PARTS = [];
   function makeParts() { PARTS = [
     ['start', 'Your post', B.name + ' was <span class="k-hl o">featured on the Vegans Explore Podcast</span>',
-      'The spotlight on Episode ' + B.ep + ' of the Vegans Explore Podcast, ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Here is the post. One question, then you are on to your episode.',
+      'The spotlight on Episode ' + B.ep + ' of the Vegans Explore Podcast, ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Here is the post and your segment. One question, then your listing.',
       "Hi, I'm Liz. We made this page just for you.", 'liz-start-v2.mp3', 'One question'],
-    ['episode', 'Your episode', 'Hear <span class="k-hl o">your segment</span>',
-      'Spotlight: ' + B.person + ' of ' + B.name + ', from Episode ' + B.ep + ' of the Vegans Explore Podcast.',
-      "Here's your segment. Share it with your regulars.", 'liz-episode-v2.mp3', 'Listen and share'],
     ['listing', 'Your listing', B.claimed ? B.name + ' is <span class="k-hl g">yours on Vegans Explore</span>' : 'Claim <span class="k-hl g">' + B.name + '</span> before January 1',
       B.claimed ? 'Your listing is claimed. Sign in any time to keep it up to date.' : 'This is your listing, live. Claim it free before January 1, 2027, and you join as a Founding Member.',
       "Have a look. Claim it only if you want to.", 'liz-listing-v2.mp3', B.claimed ? 'Keep it up to date' : 'Claim it free']
@@ -318,7 +325,7 @@
       '<div class="fx-reel"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video><button type="button" class="fx-play" aria-label="Play the reel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>' +
       '<div class="ig-act">' + igIcon('M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z') + igIcon('M20 12a8 8 0 1 1-3.2-6.4L20 4l-1 4.2A8 8 0 0 1 20 12z') + igIcon('M21 4L3 11l7 2 2 7 9-16z') + '<span class="sv">' + igIcon('M6 3h12v18l-6-4-6 4z') + '</span></div>' +
       (B.caption ? '<p class="ig-cap"><b>vegansexplore</b> ' + esc(B.caption) + '</p>' : '') + (B.tags ? '<p class="ig-tags">' + esc(B.tags) + '</p>' : '') +
-      '<p class="ig-when">' + esc(B.post) + '</p></div>' +
+      '<p class="ig-when">' + esc(B.post) + '</p><div class="ig-more"><span role="button" tabindex="0">Scroll for the caption &darr;</span></div></div>' +
       '</div>';
   }
   function reel() { return '<div class="k-pic fx-reel" style="--k-c:#2D5C27"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video><button type="button" class="fx-play" aria-label="Play the reel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>'; }
@@ -329,7 +336,12 @@
         '<div class="gb-cover fx-cover"><div>' + ask(true) +
           '<div class="k-blocks" style="margin-top:22px"><div class="k-block k-dk"><span class="k-big">Ep ' + B.ep + '</span><small>' + (B.airedPast ? 'Aired ' : 'Airs ') + esc(B.aired) + '</small></div>' +
           '<div class="k-block k-peach"><span class="k-big">' + esc(B.postShort) + '</span><small>Your reel goes up, ' + esc(B.post) + '</small></div>' +
-          '<div class="k-block k-pink"><span class="k-big">' + esc(B.clipLen || 'Your part') + '</span><small>Your segment on the show</small></div></div>' + FROM +
+          '<div class="k-block k-pink"><span class="k-big">' + esc(B.clipLen || 'Your part') + '</span><small>Your segment on the show</small></div></div>' +
+          '<section class="rf-sec"><span class="k-label">Your segment, as listeners hear it</span><div class="k-card" style="--k-c:#FFEBD1">' +
+          '<p style="margin:0 0 4px"><b>Spotlight: ' + esc(B.person) + ' of ' + esc(B.name) + '</b>' + (B.clipLen ? ', ' + esc(B.clipLen) : '') + '</p>' +
+          '<p class="gb-fine" style="margin:0 0 10px">From Episode ' + B.ep + ' of the Vegans Explore Podcast, from Liz\'s introduction to the close.</p>' +
+          '<audio id="fxClip" controls preload="metadata" src="' + MEDIA + esc(B.clip) + '" style="width:100%" aria-label="Your segment from Episode ' + B.ep + '"></audio>' +
+          '<p class="gb-fine" style="margin-top:10px">Hear the whole show on <a href="/media" data-t="media_open">Vegans Explore Media</a>.</p></div></section>' + FROM +
         '</div>' + post() + '</div>' + next(i);
     },
     episode: function (i) {
@@ -404,6 +416,12 @@
         unlock();
       });
     }); });
+    var igp = main.querySelector('.fx-cover .ig-post');
+    if (igp) {
+      igp.addEventListener('scroll', function () { igp.classList.toggle('scrolled', igp.scrollTop > 40); }, { passive: true });
+      var mk = igp.querySelector('.ig-more span'), go = function () { igp.scrollBy({ top: igp.clientHeight * 0.7, behavior: 'smooth' }); };
+      if (mk) { mk.addEventListener('click', go); mk.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); }
+    }
     var ph = main.querySelector('.fx-phone'); if (ph) { var fit = function () { var fr = ph.querySelector('iframe'); if (fr) fr.style.transform = 'scale(' + (ph.clientWidth / 390) + ')'; }; fit(); addEventListener('resize', fit); }
     if (window.scrollY > 120) window.scrollTo(0, 0);
   }
