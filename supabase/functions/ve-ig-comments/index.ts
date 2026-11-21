@@ -82,17 +82,21 @@ async function handleComment(v: Record<string, any>, token: string, igId: string
   const { data: before } = await db.from('ve_ig_comment_events').select('id').eq('from_id', from.id).eq('keyword_id', kw.id).eq('status', 'dm_sent').limit(1);
   if (before && before.length) { await set({ status: 'repeat', keyword_id: kw.id }); return 'repeat'; }   // one DM per person per keyword
   // A personal tracked link, so the click names the person (Tracked links rule).
+  // channel must be one of ve_links' allowed values (dm, text, email, social, print, other); 'instagram-dm' is the tag. 2026-11-21: the first
+  // live DM carried a link that was never saved (channel 'instagram-dm' was refused), so the click fell to the homepage.
   const code = 'ig-' + rand(7);
-  await db.from('ve_links').insert({ code, label: `Instagram DM: ${kw.keyword} for @${from.username || from.id}`, destination: kw.destination,
-    initiative_slug: kw.initiative_slug, tags: [kw.initiative_slug, 'instagram-dm', kw.keyword.toLowerCase()], channel: 'instagram-dm',
-    recipient_name: from.username ? '@' + from.username : null, active: true });
-  const msg = kw.dm_text.replace('{link}', `${SITE}/go/${code}`);
+  const { error: linkErr } = await db.from('ve_links').insert({ code, label: `Instagram DM: ${kw.keyword} for @${from.username || from.id}`.slice(0, 120), destination: kw.destination,
+    initiative_slug: kw.initiative_slug, tags: [kw.initiative_slug, 'instagram-dm', kw.keyword.toLowerCase()], channel: 'dm',
+    recipient_name: from.username ? ('@' + from.username).slice(0, 120) : null, active: true });
+  // If the tracked link could not be saved, send the page itself rather than a link that lands on the homepage.
+  const link = linkErr ? (kw.destination.startsWith('http') ? kw.destination : SITE + kw.destination) : `${SITE}/go/${code}`;
+  const msg = kw.dm_text.replace('{link}', link);
   const send = (who: string) => fetch(`${GRAPH}/${who}/messages`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ recipient: { comment_id: commentId }, message: { text: msg } }) });
   let r = await send(igId);
   if (!r.ok && pageId) { const first = (await r.text()).slice(0, 200); r = await send(pageId); if (!r.ok) { await set({ status: 'dm_failed', keyword_id: kw.id, link_code: code, dm_error: (first + ' | ' + (await r.text())).slice(0, 500) }); return 'dm_failed'; } }
   if (!r.ok) { await set({ status: 'dm_failed', keyword_id: kw.id, link_code: code, dm_error: (await r.text()).slice(0, 500) }); return 'dm_failed'; }
-  await set({ status: 'dm_sent', keyword_id: kw.id, link_code: code, dm_sent_at: new Date().toISOString() });
+  await set({ status: 'dm_sent', keyword_id: kw.id, link_code: linkErr ? null : code, dm_error: linkErr ? ('link not saved: ' + linkErr.message).slice(0, 500) : null, dm_sent_at: new Date().toISOString() });
   const replies = kw.public_replies?.length ? kw.public_replies : ['Sent! Check your DMs 🌱'];
   const pr = await fetch(`${GRAPH}/${commentId}/replies`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ message: replies[Math.floor(Math.random() * replies.length)] }) });

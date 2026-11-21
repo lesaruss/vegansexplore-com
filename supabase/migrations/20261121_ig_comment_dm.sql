@@ -61,3 +61,7 @@ insert into secret_rotation_plan (key, provider, tier, dashboard_url, label, req
 ('INSTAGRAM_APP_ID','Meta','manual','https://developers.facebook.com/apps/','Instagram app ID (Vegans Explore comment-to-DM)', now(), 'See docs/plans/2026-11-21-ig-comment-dm-setup.md'),
 ('INSTAGRAM_APP_SECRET','Meta','manual','https://developers.facebook.com/apps/','Instagram app secret (Vegans Explore comment-to-DM)', now(), 'See docs/plans/2026-11-21-ig-comment-dm-setup.md')
 on conflict (key) do nothing;
+-- 2026-11-21 fixes after the first live test (Sean got the DM; the link went to the homepage):
+-- ve_links.channel only allows dm/text/email/social/print/other, so the function now writes 'dm' (tag 'instagram-dm'); the B12 keyword
+-- now lands on the B12 page itself; Sean's first link was repaired by hand.
+update ve_ig_keywords set destination='/guides/nutrition-guide#/nutrients/b12' where upper(keyword)='B12' and media_id is null;
