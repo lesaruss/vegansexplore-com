@@ -99,3 +99,40 @@ So claim your free membership at vegansexplore.com, tell us what's happening nea
 
 update ve_pod_episodes set title = 'King Tides, Love Life Cafe and Community Nights Coming in February' where id=ep and title ilike '%lineup in progress%';
 end $$;
+
+-- Later 2026-11-21, Sean: "leave off Poderosa Minded... maybe we put in a thing for bounties... start collecting them now" and "we want to take a
+-- look back at the year in South Florida... favorite moments... restaurants that we might have lost... our year end episode". Poderosa Minded
+-- out of Liz's list and the Friendsgiving recap out of River's; bounties in Liz's segment; the year-end call in Sean's card 60; Kai's coming-up
+-- line to match. Applied by Logan 2026-11-21.
+do $$
+declare ep uuid := '87c6333a-11b8-4459-8a68-c0ea19831ade';
+begin
+update ve_pod_segments set sources = (select jsonb_agg(x) from jsonb_array_elements(sources) x where x->>'title' <> 'Poderosa Minded'),
+ script = $s$Thanks, Kai. Hi everyone, it's Liz, with what's new in the Vegans Explore Directory here in South Florida.
+
+If a Vegan getaway is on your list, Holistic Holiday at Sea just joined. It calls itself the original Vegan cruise: a Vegan wellness cruise out of Miami, with a 100% whole-foods, plant-based menu and more than 100 classes on board, from cooking to yoga.
+
+aPlantBasedDiet.org, which puts on Vegan events in Miami, joined too. And so did the Animal Rights Foundation of Florida, working for animals across the state since 1989, through humane education and campaigns, and encouraging a Vegan diet.
+
+And while we wind down the year, here's something you can do right now. Members can take on bounties: check in at a Vegan spot, share your food photos, or film a recap at an event. Each one earns you points, every check-in and photo helps a local Vegan business get seen, and some bounties even open up paid work. In 2027, we're launching lots of new features and new ways to use those points, so start collecting them now. You'll find your bounties in your dashboard at vegansexplore.com.$s$
+ where episode_id=ep and position=40 and script like '%Poderosa%';
+update ve_pod_segments set title='What''s on: ART BASIL, March for Animals at FIU, Community Nights',
+ sources = (select jsonb_agg(x) from jsonb_array_elements(sources) x where x->>'title' not ilike '%Friendsgiving%'),
+ script = $s$Thanks, Liz. I'm River, and I find the events worth leaving the house for. Here's what's on in South Florida.
+
+Next Wednesday, December 2nd, during Miami Art Week, Aguacate Garden of Love hosts ART BASIL. That's basil, the herb. It's a free party from 4 PM, with local artists, live music, DJ sets and basil-inspired Vegan recipes. It's an independent community event, not part of Art Basel.
+
+The next day, Thursday, December 3rd, there's a March for Animals at FIU, part of a nationwide day of action calling on universities to end animal testing and invest in research without animals. Meet on the field behind the Graham Center at 11 AM. The march runs from 12:30 to 1:30, and it's open to everyone, not just students.
+
+And something we're building: Vegans Explore Community Nights are coming to South Florida in February, with more events planned all through 2027. The best way to stay in the loop is to claim your free membership at vegansexplore.com.
+
+One more thing: we want to hear from you. Hosting something, or went to something great? Tap Submit an event at vegansexplore.com, under Events, and it could end up on a future episode.$s$
+ where episode_id=ep and position=50 and script like '%Friendsgiving%';
+update ve_pod_segments set script = $s$Thanks, Sean. Here's what's coming up today. The king tides peak in South Florida this week, so we'll tell you what to expect and how to get around them. Liz has what's new in the Directory, a way to start earning points right now, and a spotlight on Veronica Menon of Love Life Cafe in Wynwood. And River has a free Miami Art Week party, a march at FIU, and something we're building for February. Stay with us.$s$
+ where episode_id=ep and position=30;
+update ve_pod_segments set title='Your call-out: community managers, content creators and the year in South Florida',
+ script = $s$Before we go: we're looking for community managers and content creators across South Florida. People who want to be boots on the ground as we keep growing, and who want to be considered for future opportunities with us. If that's you, sign up free at vegansexplore.com. The short survey asks what you'd love to do, and that's how we find you.
+
+And one more thing. Our year-end episode is all about you. We want to look back at the year in South Florida together. What were your favorite moments? What stood out? Is there a restaurant we lost this year that you want to give a shout-out to? This is your chance. Send us a voice memo or a note at hello@vegansexplore.com, and you might hear yourself on the show.$s$
+ where episode_id=ep and position=60;
+end $$;
